@@ -107,8 +107,8 @@ def get_query(url: str) -> Response | int:
             logger.warning(f"Не указана ссылка на сайт: {url}")
             return 4
 
-        if search(r"h+t+p+s?:?/?\\?", url):
-            url = sub(r"h+t+p+s?:?/?\\?", "http://", url)
+        if search(r"h+t+p+s?:?/+", url):
+            url = sub(r"h+t+p+s?:?/+", "http://", url)
         else:
             url = "http://" + url
 
@@ -258,8 +258,11 @@ class Checker:
             self.report[chapter]["status"] = True
 
             if not elem.attrs['href'].startswith(self.page.url):
-                elem.attrs['href'] = self.page.url[:-1] if self.page.url.endswith("/") \
-                    else self.page.url + elem.attrs['href']
+                if self.page.url.endswith("/"):
+                    elem.attrs['href'] = self.page.url[:-1] + elem.attrs['href']
+                else:
+                    elem.attrs['href'] = self.page.url + elem.attrs['href']
+
             self.report[chapter]["link"] = elem.attrs['href']
 
             slave_page = get_query(elem.attrs['href'])
